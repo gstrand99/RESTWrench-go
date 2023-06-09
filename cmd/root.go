@@ -76,24 +76,23 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
 		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
 
 		// Search config in home directory with name ".RESTWrench-go" (without extension).
-		viper.AddConfigPath(home)
+		viper.AddConfigPath("wrench/")
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".RESTWrench-go")
-	}
+		viper.SetConfigName("config")
 
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-	}
+    if err := viper.ReadInConfig(); err != nil {
+        if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+            // Config file not found; ignore since we have sensible defaults
+            fmt.Println("No config file found")
+        } else {
+            // Config file was found but another error was produced
+            panic(fmt.Errorf("Fatal error config file: %s \n", err))
+        }
+    }
 }

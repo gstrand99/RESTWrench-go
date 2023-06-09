@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// runCmd represents the run command
+//runCmd represents the run command
 var RunCmd = &cobra.Command{
 	Use:   "run",
 	Short: "A brief description of your command",

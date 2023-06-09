@@ -5,10 +5,18 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package run
 
 import (
-	"fmt"
-
-	"github.com/spf13/cobra"
+    "encoding/json"
+    "fmt"
+    "github.com/spf13/cobra"
+    "io/ioutil"
+    "github.com/gstrand99/RESTWrench-go/fuctionality/requests"
 )
+
+type GetRequest struct {
+    Type string `json:"type"`
+    Name string `json:"name"`
+    URL string `json:"url"`
+}
 
 // allCmd represents the all command
 var allCmd = &cobra.Command{
@@ -20,11 +28,30 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("all called")
-	},
-}
+    Run: func(cmd *cobra.Command, args []string) {
+        filename := "wrench/requests/get_requests.json"
 
+        // Read the file
+        data, err := ioutil.ReadFile(filename)
+        if err != nil {
+            fmt.Printf("Error reading file: %v\n", err)
+            return
+        }
+
+        // Unmarshal the JSON
+        var getRequests []GetRequest
+        err = json.Unmarshal(data, &getRequests)
+        if err != nil {
+            fmt.Printf("Error unmarshalling JSON: %v\n", err)
+            return
+        }
+
+        // Run all GET requests
+        for _, getRequest := range getRequests {
+            requests.Get(getRequest.Type, getRequest.Name, getRequest.URL)
+        }
+    },
+}
 func init() {
 	RunCmd.AddCommand(allCmd)
 
